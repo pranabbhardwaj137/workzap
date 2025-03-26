@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Briefcase, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Signup = () => {
   const location = useLocation();
@@ -15,6 +16,26 @@ const Signup = () => {
   const defaultType = queryParams.get('type') === 'recruiter' ? 'recruiter' : 'worker';
   
   const [userType, setUserType] = useState(defaultType);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [location_, setLocation] = useState('');
+  
+  const { register, isLoading } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    await register({
+      firstName,
+      lastName,
+      email,
+      password,
+      userType: userType as 'worker' | 'recruiter',
+      location: location_
+    });
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -27,7 +48,7 @@ const Signup = () => {
             <p className="text-gray-600 mt-2">Join WorkZap and start connecting</p>
           </div>
           
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <Label className="mb-2 block">I want to:</Label>
               <RadioGroup 
@@ -76,23 +97,49 @@ const Signup = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First name</Label>
-                <Input id="firstName" placeholder="First name" />
+                <Input 
+                  id="firstName" 
+                  placeholder="First name" 
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last name</Label>
-                <Input id="lastName" placeholder="Last name" />
+                <Input 
+                  id="lastName" 
+                  placeholder="Last name" 
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
               </div>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" type="email" placeholder="you@example.com" />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="you@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="Create a password" />
+              <Input 
+                id="password" 
+                type="password" 
+                placeholder="Create a password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
               <p className="text-xs text-gray-500 mt-1">
                 Must be at least 8 characters and include a number and a symbol.
               </p>
@@ -100,14 +147,21 @@ const Signup = () => {
             
             <div className="space-y-2">
               <Label htmlFor="location">Location</Label>
-              <Input id="location" placeholder="City, State" />
+              <Input 
+                id="location" 
+                placeholder="City, State" 
+                value={location_}
+                onChange={(e) => setLocation(e.target.value)}
+                required
+              />
             </div>
             
             <Button 
               type="submit" 
               className="w-full bg-workzap-blue hover:bg-workzap-blue/90"
+              disabled={isLoading}
             >
-              Create Account
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
           
