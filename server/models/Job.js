@@ -69,4 +69,7 @@ const JobSchema = new mongoose.Schema({
   }]
 });
 
+// Create a geospatial index on coordinates
+JobSchema.index({ coordinates: '2dsphere' });
+
 module.exports = mongoose.model('Job', JobSchema);

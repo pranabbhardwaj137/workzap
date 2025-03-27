@@ -10,6 +10,7 @@ const bcrypt = require('bcryptjs');
 const authRoutes = require('./routes/auth');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
+const locationRoutes = require('./routes/locations');
 
 // Load environment variables
 dotenv.config();
@@ -30,6 +31,7 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Simple health check route
 app.get('/api/health', (req, res) => {

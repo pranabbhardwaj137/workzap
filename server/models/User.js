@@ -29,6 +29,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  currentLocation: {
+    coordinates: {
+      lat: Number,
+      lng: Number
+    },
+    address: String,
+    lastUpdated: {
+      type: Date,
+      default: Date.now
+    }
+  },
   skills: [{
     type: String
   }],

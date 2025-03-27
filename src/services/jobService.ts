@@ -28,6 +28,7 @@ interface JobData {
 
 class JobService {
   private baseUrl = 'http://localhost:5000/api/jobs';
+  private token = localStorage.getItem('token');
 
   async getAllJobs(filter: JobFilter = {}) {
     try {
@@ -72,13 +73,13 @@ class JobService {
     }
   }
 
-  async createJob(jobData: JobData, token: string) {
+  async createJob(jobData: JobData) {
     try {
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token': token,
+          'x-auth-token': this.token || '',
         },
         body: JSON.stringify(jobData),
       });
@@ -95,13 +96,13 @@ class JobService {
     }
   }
 
-  async updateJob(id: string, jobData: Partial<JobData>, token: string) {
+  async updateJob(id: string, jobData: Partial<JobData>) {
     try {
       const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token': token,
+          'x-auth-token': this.token || '',
         },
         body: JSON.stringify(jobData),
       });
@@ -118,12 +119,12 @@ class JobService {
     }
   }
 
-  async deleteJob(id: string, token: string) {
+  async deleteJob(id: string) {
     try {
       const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'DELETE',
         headers: {
-          'x-auth-token': token,
+          'x-auth-token': this.token || '',
         },
       });
       
@@ -139,13 +140,13 @@ class JobService {
     }
   }
 
-  async applyForJob(id: string, token: string) {
+  async applyForJob(id: string) {
     try {
       const response = await fetch(`${this.baseUrl}/${id}/apply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token': token,
+          'x-auth-token': this.token || '',
         },
       });
       
@@ -157,6 +158,68 @@ class JobService {
       return await response.json();
     } catch (error) {
       console.error(`Error applying for job ${id}:`, error);
+      throw error;
+    }
+  }
+
+  // New methods for the dashboard
+  async getUserJobs() {
+    try {
+      const response = await fetch(`${this.baseUrl}/user-jobs`, {
+        headers: {
+          'x-auth-token': this.token || '',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user jobs');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching user jobs:', error);
+      throw error;
+    }
+  }
+
+  async getAppliedJobs() {
+    try {
+      const response = await fetch(`${this.baseUrl}/applied`, {
+        headers: {
+          'x-auth-token': this.token || '',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch applied jobs');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching applied jobs:', error);
+      throw error;
+    }
+  }
+
+  async updateApplicationStatus(jobId: string, applicantId: string, status: 'accepted' | 'rejected') {
+    try {
+      const response = await fetch(`${this.baseUrl}/${jobId}/applications/${applicantId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': this.token || '',
+        },
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update application status');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Error updating application status:`, error);
       throw error;
     }
   }
