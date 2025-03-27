@@ -41,7 +41,10 @@ const JobSchema = new mongoose.Schema({
   },
   volunteerSlots: {
     total: Number,
-    filled: Number
+    filled: {
+      type: Number,
+      default: 0
+    }
   },
   status: {
     type: String,

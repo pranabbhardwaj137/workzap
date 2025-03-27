@@ -16,6 +16,14 @@ interface User {
     comment: string;
     date: string;
   }>;
+  currentLocation?: {
+    coordinates: {
+      lat: number;
+      lng: number;
+    },
+    address: string,
+    lastUpdated: string
+  };
 }
 
 interface ProfileUpdateData {

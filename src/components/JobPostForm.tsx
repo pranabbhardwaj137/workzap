@@ -106,9 +106,15 @@ const JobPostForm: React.FC = () => {
         ? { total: values.volunteerSlots.total, filled: 0 }
         : undefined;
       
-      // Create job data
+      // Create job data, ensuring all required fields are present
       const jobData = {
-        ...values,
+        title: values.title,
+        description: values.description,
+        category: values.category,
+        wage: values.wage,
+        location: values.location,
+        isUrgent: values.isUrgent,
+        isVolunteer: values.isVolunteer,
         volunteerSlots,
         coordinates: userLocation || undefined,
       };
